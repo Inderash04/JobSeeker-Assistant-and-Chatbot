@@ -35,3 +35,9 @@ def LLM_bot(messages):
     ret_d["elapsed_time"]=elapsed_time
     
     return ret_d
+
+#-------------------------------------------------
+#Connecting mcp and chat step 2 - 1.in views.py
+#-------------------------------------------------
+def chat_with_tools(user_message,request):
+    

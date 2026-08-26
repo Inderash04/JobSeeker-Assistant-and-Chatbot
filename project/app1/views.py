@@ -103,13 +103,17 @@ from .models import *
 MAX_UPLOAD_SIZE_MB=5
 from .script_resume_parser import resume_reader
 from .script_readGithub import summarize_profile
+
 class query_job_assitance(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self,request):
         pdf_file=request.FILES.get("pdf",None)
         github_username=request.data.get("github_username")
-
+        option = request.data.get("option")  # "Gap Analysis" | "Live Listings" | "Compare Resume"
+        location=request.data.get("location")
+        job_title=request.data.get("job_title")
+        
         #-------------------------------------------------
         # BLOCK 1: Resume handling — independent
         #-------------------------------------------------
@@ -149,15 +153,71 @@ class query_job_assitance(APIView):
         #-------------------------------------------------
         # BLOCK 3: None is given
         #-------------------------------------------------
-
-
-
-
-
+        if resume_summary is None and github_summary is None:
+            return Response(
+                {"error": "Provide at least a resume or a GitHub username."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        
         #-------------------------------------------------
         # BLOCK 4: Option based Resume and GitHub handling 
         #-------------------------------------------------
-    
+        if option == "Gap Analysis":
+            user_profile=UserProfile.objects.get(user=request.user).first()
+            return self._handle_analysis(user_profile, resume_summary)
+        
+        elif option == "Live listings":
+            return self._handle_listings(resume_summary, github_summary)
+
+        elif option == "Compare Resume":
+            return self._handle_compare(resume_summary, github_summary)
+
+        else:
+            return Response(
+                {"error": "Invalid or missing 'option'. Gap Analysis | Live listings | Compare Resume."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+#-------------------------------------------------
+# To work on tomorrow
+#-------------------------------------------------
+    def _handle_analysis(self, user_profile, resume_summary):
+        previous_resumes = Resume.objects.filter(user=user_profile).order_by("-uploaded_at")[1:6]
+        # TODO: build actual comparison logic against previous_resumes
+        return Response({"comparison_summary": "placeholder — compare logic goes here"})
+ 
+    def _handle_listings(self, resume_summary, github_summary):
+        # TODO: call job_market_tool.search_india_jobs() using signal
+        # extracted from resume_summary/github_summary as the query
+        return Response({"jobs": []})
+ 
+    def _handle_compare(self, resume_summary, github_summary):
+        # TODO: combine resume + github + live listings, rank matches
+        return Response({"matches": []})
+
+#-------------------------------------------------
+# To work on tomorrow
+#-------------------------------------------------
+
+
+
+
+
+#-------------------------------------------------
+#Connecting mcp and chat step 1
+#-------------------------------------------------
+from llm import chat_with_tools
+class query_job_seeker(APIView):
+    def get(self, request):
+        data=request.data
+        user_message=data.get("message")
+        bot_reply=chat_with_tools(request, user_message)
+
+
+
+
+
+
+
 
 #if the chosen format is button 2 -> go to usual bot chat
 class query_bot_chat(APIView):

@@ -60,5 +60,6 @@ class Resume(models.Model):
     resume_summary = models.TextField(null=True)
     github_username=models.CharField(max_length=200,null=True)
     github_summary=models.TextField(null=True)
+    uploaded_time=models.DateTimeField(auto_now_add=True)
 
 
