@@ -206,7 +206,10 @@ class query_job_assitance(APIView):
 #Connecting mcp and chat step 1
 #-------------------------------------------------
 from llm import chat_with_tools
+
 class query_job_seeker(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
         data=request.data
         user_message=data.get("message")

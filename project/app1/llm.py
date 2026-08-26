@@ -19,7 +19,9 @@ def LLM_bot(messages):
     start=time.time()
     response = client.chat.completions.create(
         model="openai/gpt-oss-20b",
-        messages=messages
+        messages=messages,
+        
+        
     )
     elapsed_time=time.time()-start
     usage = response.usage
@@ -36,8 +38,72 @@ def LLM_bot(messages):
     
     return ret_d
 
+
+def LLM_to_MCP(messages, tools=None):
+    ret_d = {}
+    response = client.chat.completions.create(
+        model="openai/gpt-oss-20b",
+        messages=messages,
+        tools=tools,          # <-- pass tool definitions
+        tool_choice="auto" if tools else None,
+    )
+    usage = response.usage
+    message = response.choices[0].message
+    ret_d["bot_message"] = message.content
+    ret_d["tool_calls"] = message.tool_calls   # <-- None, or a list of calls the model wants to make
+    ret_d["raw_message"] = message              # keep the full message object — you'll need to append it back
+    
+
+    return ret_d
+
 #-------------------------------------------------
 #Connecting mcp and chat step 2 - 1.in views.py
 #-------------------------------------------------
-def chat_with_tools(user_message,request):
-    
+
+TOOLS = [
+    {
+        "type": "function",
+        "function": {
+            "name": "get_last_two_resumes",
+            "description": "Get the current user's two most recently uploaded resumes.",
+            "parameters": {
+                "type": "object",
+                "properties": {},
+                "required": []
+            }
+        }
+    }
+]
+import json
+from .services import run_tool_call_sync  # from earlier in our conversation
+
+def chat_with_tools(request, user_message: str) -> str:
+    messages = [{"role": "user", "content": user_message}]
+
+    result = LLM_to_MCP(messages, tools=TOOLS)
+
+    if result["tool_calls"]:
+        # Append the assistant's tool-call message back into history — required by the API
+        messages.append(result["raw_message"])
+
+        for tool_call in result["tool_calls"]:
+            tool_name = tool_call.function.name
+            tool_args = json.loads(tool_call.function.arguments)  # string -> dict
+
+            # === SECURITY BOUNDARY, same as before ===
+            # tool_args comes from the model — never trust it for identity.
+            # request.user is injected by YOUR code, not the model.
+            tool_result = run_tool_call_sync(request.user, tool_name, tool_args)
+
+            # Feed the result back as a "tool" role message
+            messages.append({
+                "role": "tool",
+                "tool_call_id": tool_call.id,
+                "content": json.dumps(tool_result),
+            })
+
+        # Second call: let the model use the tool result to write a final answer
+        final = LLM_to_MCP(messages, tools=TOOLS)
+        return final["bot_message"]
+
+    return result["bot_message"]
