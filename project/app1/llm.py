@@ -52,7 +52,6 @@ def LLM_to_MCP(messages, tools=None):
     ret_d["bot_message"] = message.content
     ret_d["tool_calls"] = message.tool_calls   # <-- None, or a list of calls the model wants to make
     ret_d["raw_message"] = message              # keep the full message object — you'll need to append it back
-    
 
     return ret_d
 
@@ -70,6 +69,45 @@ TOOLS = [
                 "type": "object",
                 "properties": {},
                 "required": []
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_github_summary",
+            "description": "Get the GitHub summary from the current user's most recently uploaded resume.",
+            "parameters": {
+                "type": "object",
+                "properties": {},
+                "required": []
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "find_job_listings",
+            "description": "Find job listings based on location and an optional job title.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "location": {
+                        "type": "string",
+                        "description": "The location where the jobs should be searched."
+                    },
+                    "job_title": {
+                        "type": "string",
+                        "description": "The job title or keywords to search for.",
+                        "default": ""
+                    },
+                    "max_results": {
+                        "type": "integer",
+                        "description": "Maximum number of job listings to return.",
+                        "default": 10
+                    }
+                },
+                "required": ["location"]
             }
         }
     }
