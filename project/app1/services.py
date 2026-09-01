@@ -4,7 +4,7 @@ from .mcp_tools import mcp
 from .mcp_context import current_user_var
 
 #to call the async block inside sync code usign asyncio
-def run_to_call_sync(user,tool_name:str,args):
+def run_tool_call_sync(user,tool_name:str,args):
     return asyncio.run(run_tool_call(user,tool_name,args))
 
 

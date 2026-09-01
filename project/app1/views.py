@@ -26,6 +26,9 @@ def home_view(request):
 def chatUIPage(request):
     return render(request,'chatUI.html')
 
+def selectbot(request):
+    return render(request,'selectbot.html')
+
 #CSRF authentication bypass
 from rest_framework.authentication import SessionAuthentication
 
@@ -104,7 +107,7 @@ MAX_UPLOAD_SIZE_MB=5
 from .script_resume_parser import resume_reader
 from .script_readGithub import summarize_profile
 
-class query_job_assitance(APIView):
+class read_profile(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self,request):
@@ -158,45 +161,50 @@ class query_job_assitance(APIView):
                 {"error": "Provide at least a resume or a GitHub username."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+
+        return Response({"status":status.HTTP_200_OK,"message":"passed through read_profile api"})
+
+
         
-        #-------------------------------------------------
-        # BLOCK 4: Option based Resume and GitHub handling 
-        #-------------------------------------------------
-        if option == "Gap Analysis":
-            user_profile=UserProfile.objects.get(user=request.user).first()
-            return self._handle_analysis(user_profile, resume_summary)
+#         #-------------------------------------------------
+#         # BLOCK 4: Option based Resume and GitHub handling 
+#         #-------------------------------------------------
+#         if option == "Gap Analysis":
+#             user_profile=UserProfile.objects.get(user=request.user).first()
+#             return self._handle_analysis(user_profile, resume_summary)
         
-        elif option == "Live listings":
-            return self._handle_listings(resume_summary, github_summary)
+#         elif option == "Live listings":
+#             return self._handle_listings(resume_summary, github_summary)
 
-        elif option == "Compare Resume":
-            return self._handle_compare(resume_summary, github_summary)
+#         elif option == "Compare Resume":
+#             return self._handle_compare(resume_summary, github_summary)
 
-        else:
-            return Response(
-                {"error": "Invalid or missing 'option'. Gap Analysis | Live listings | Compare Resume."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-#-------------------------------------------------
-# To work on tomorrow
-#-------------------------------------------------
-    def _handle_analysis(self, user_profile, resume_summary):
-        previous_resumes = Resume.objects.filter(user=user_profile).order_by("-uploaded_at")[1:6]
-        # TODO: build actual comparison logic against previous_resumes
-        return Response({"comparison_summary": "placeholder — compare logic goes here"})
+#         else:
+#             return Response(
+#                 {"error": "Invalid or missing 'option'. Gap Analysis | Live listings | Compare Resume."},
+#                 status=status.HTTP_400_BAD_REQUEST,
+#             )
+# #-------------------------------------------------
+# # To work on tomorrow
+# #-------------------------------------------------
+#     def _handle_analysis(self, user_profile, resume_summary):
+#         previous_resumes = Resume.objects.filter(user=user_profile).order_by("-uploaded_at")[1:6]
+#         # TODO: build actual comparison logic against previous_resumes
+#         return Response({"comparison_summary": "placeholder — compare logic goes here"})
  
-    def _handle_listings(self, resume_summary, github_summary):
-        # TODO: call job_market_tool.search_india_jobs() using signal
-        # extracted from resume_summary/github_summary as the query
-        return Response({"jobs": []})
+#     def _handle_listings(self, resume_summary, github_summary):
+#         # TODO: call job_market_tool.search_india_jobs() using signal
+#         # extracted from resume_summary/github_summary as the query
+#         return Response({"jobs": []})
  
-    def _handle_compare(self, resume_summary, github_summary):
-        # TODO: combine resume + github + live listings, rank matches
-        return Response({"matches": []})
+#     def _handle_compare(self, resume_summary, github_summary):
+#         # TODO: combine resume + github + live listings, rank matches
+#         return Response({"matches": []})
 
-#-------------------------------------------------
-# To work on tomorrow
-#-------------------------------------------------
+# #-------------------------------------------------
+# # To work on tomorrow
+# #-------------------------------------------------
 
 
 
@@ -205,20 +213,37 @@ class query_job_assitance(APIView):
 #-------------------------------------------------
 #Connecting mcp and chat step 1
 #-------------------------------------------------
-from llm import chat_with_tools
+from .llm import chat_with_tools
 
 class query_job_seeker(APIView):
     permission_classes = [IsAuthenticated]
+    def post(self, request):
+    #redis based daily message limit
+        count_key=f"daily limit:{request.user.id}"
+        count=redis_client.get(count_key)
 
-    def get(self, request):
-        data=request.data
-        user_message=data.get("message")
-        bot_reply=chat_with_tools(request, user_message)
+        if count is None:
+            redis_client.set(count_key,1)
+            redis_client.expire(count_key,86400)
+        else:
+            count=int(count)
+            if count > 5:
+                return Response({"error": "Message limit reached for today.",status:status.HTTP_429_TOO_MANY_REQUESTS})
 
+            else:
+                redis_client.incr(count_key)
+        
 
+        try:
+            data=request.data
+            user_message=data.get("message")
+            if not user_message:
+                return Response({"error":"Message is required",status:status.HTTP_400_BAD_REQUEST})
+            bot_reply=chat_with_tools(request, user_message)
+        except Exception as e:
+            return Response({"error":f"error message is {str(e)}","status":status.HTTP_404_NOT_FOUND})
 
-
-
+        return Response({"bot_reply":bot_reply,status:status.HTTP_200_OK})
 
 
 
@@ -350,7 +375,6 @@ def user_llm_interaction(label,message,request):
         #return the lllm fetched answer
         return bot_message 
     except Exception as e:
-
         return f"error is : {str(e)}"
 #needs to be fixed for production
 

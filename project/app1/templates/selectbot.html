@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Choose Your Assistant</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                         Roboto, Helvetica, Arial, sans-serif;
+
+            background:
+                radial-gradient(circle at 15% 20%, rgba(99, 102, 241, 0.12), transparent 30%),
+                radial-gradient(circle at 85% 80%, rgba(168, 85, 247, 0.10), transparent 30%),
+                #08090d;
+
+            color: #ffffff;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            padding: 40px 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1050px;
+            text-align: center;
+        }
+
+        /* ---------- Header ---------- */
+
+        .header {
+            margin-bottom: 55px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+
+            padding: 7px 13px;
+
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            border-radius: 999px;
+
+            background: rgba(255, 255, 255, 0.04);
+
+            color: #a5a7b4;
+            font-size: 13px;
+            font-weight: 500;
+
+            margin-bottom: 20px;
+        }
+
+        .badge-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #8b5cf6;
+            box-shadow: 0 0 12px rgba(139, 92, 246, 0.8);
+        }
+
+        h1 {
+            font-size: clamp(34px, 5vw, 52px);
+            line-height: 1.1;
+            letter-spacing: -1.8px;
+            margin-bottom: 15px;
+
+            background: linear-gradient(
+                120deg,
+                #ffffff 20%,
+                #c4c7ff 60%,
+                #a78bfa
+            );
+
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: #8d909d;
+            font-size: 16px;
+            line-height: 1.6;
+            max-width: 560px;
+            margin: auto;
+        }
+
+        /* ---------- Cards ---------- */
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+
+            text-align: left;
+        }
+
+        .bot-card {
+            position: relative;
+            overflow: hidden;
+
+            min-height: 330px;
+
+            padding: 34px;
+
+            border-radius: 24px;
+
+            border: 1px solid rgba(255, 255, 255, 0.09);
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255, 255, 255, 0.075),
+                    rgba(255, 255, 255, 0.025)
+                );
+
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+
+            cursor: pointer;
+
+            transition:
+                transform 0.35s ease,
+                border-color 0.35s ease,
+                box-shadow 0.35s ease,
+                background 0.35s ease;
+        }
+
+        .bot-card::before {
+            content: "";
+
+            position: absolute;
+
+            width: 220px;
+            height: 220px;
+
+            border-radius: 50%;
+
+            top: -120px;
+            right: -100px;
+
+            background: rgba(99, 102, 241, 0.18);
+
+            filter: blur(50px);
+
+            pointer-events: none;
+        }
+
+        .bot-card:hover {
+            transform: translateY(-8px);
+
+            border-color: rgba(139, 92, 246, 0.45);
+
+            background:
+                linear-gradient(
+                    145deg,
+                    rgba(255, 255, 255, 0.10),
+                    rgba(255, 255, 255, 0.035)
+                );
+
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.35),
+                0 0 35px rgba(99, 102, 241, 0.08);
+        }
+
+        /* ---------- Icon ---------- */
+
+        .icon-container {
+            width: 58px;
+            height: 58px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 16px;
+
+            background: rgba(99, 102, 241, 0.12);
+
+            border: 1px solid rgba(139, 92, 246, 0.20);
+
+            margin-bottom: 30px;
+
+            transition: transform 0.35s ease;
+        }
+
+        .bot-card:hover .icon-container {
+            transform: scale(1.08) rotate(-3deg);
+        }
+
+        .icon-container svg {
+            width: 28px;
+            height: 28px;
+
+            stroke: #a78bfa;
+        }
+
+        /* ---------- Card Content ---------- */
+
+        .card-title {
+            font-size: 24px;
+            font-weight: 650;
+
+            letter-spacing: -0.5px;
+
+            margin-bottom: 12px;
+        }
+
+        .card-description {
+            color: #90939f;
+
+            font-size: 14px;
+            line-height: 1.7;
+
+            max-width: 390px;
+        }
+
+        /* ---------- Card Footer ---------- */
+
+        .card-footer {
+            position: absolute;
+
+            left: 34px;
+            right: 34px;
+            bottom: 28px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .launch-text {
+            color: #a5a7b4;
+
+            font-size: 13px;
+            font-weight: 500;
+
+            transition: color 0.25s ease;
+        }
+
+        .bot-card:hover .launch-text {
+            color: #c4b5fd;
+        }
+
+        .arrow {
+            width: 38px;
+            height: 38px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 50%;
+
+            background: rgba(255, 255, 255, 0.06);
+
+            border: 1px solid rgba(255, 255, 255, 0.08);
+
+            transition:
+                transform 0.3s ease,
+                background 0.3s ease;
+        }
+
+        .bot-card:hover .arrow {
+            transform: translateX(5px);
+
+            background: rgba(139, 92, 246, 0.18);
+        }
+
+        .arrow svg {
+            width: 17px;
+            height: 17px;
+
+            stroke: #d1d5db;
+        }
+
+        /* ---------- Bottom ---------- */
+
+        .footer {
+            margin-top: 38px;
+
+            color: #555865;
+
+            font-size: 12px;
+        }
+
+        /* ---------- Responsive ---------- */
+
+        @media (max-width: 700px) {
+
+            body {
+                align-items: flex-start;
+                padding-top: 70px;
+            }
+
+            .header {
+                margin-bottom: 40px;
+            }
+
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .bot-card {
+                min-height: 300px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- Header -->
+    <div class="header">
+
+        <div class="badge">
+            <span class="badge-dot"></span>
+            AI Assistants
+        </div>
+
+        <h1>Choose your assistant</h1>
+
+        <p class="subtitle">
+            Select an assistant to get started. Each one is designed
+            for a different part of your workflow.
+        </p>
+
+    </div>
+
+
+    <!-- Cards -->
+    <div class="cards">
+
+        <!-- JobSeeker Assistant -->
+        <div class="bot-card" onclick="openBot('jobseeker')">
+
+            <div class="icon-container">
+
+                <!-- Briefcase / Job Icon -->
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round">
+
+                    <rect x="3" y="7" width="18" height="13" rx="2"></rect>
+                    <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    <path d="M3 12h18"></path>
+                    <path d="M10 12v2h4v-2"></path>
+
+                </svg>
+
+            </div>
+
+            <div class="card-title">
+                JobSeeker Assistant
+            </div>
+
+            <div class="card-description">
+                Manage your job search, resumes, applications and
+                career-related tasks with an AI assistant built for job seekers.
+            </div>
+
+            <div class="card-footer">
+
+                <span class="launch-text">
+                    Open assistant
+                </span>
+
+                <div class="arrow">
+
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round">
+
+                        <path d="M5 12h14"></path>
+                        <path d="m13 6 6 6-6 6"></path>
+
+                    </svg>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Personal Bot -->
+        <div class="bot-card" onclick="openBot('personal')">
+
+            <div class="icon-container">
+
+                <!-- Sparkles / AI Icon -->
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round">
+
+                    <path d="m12 3-1.2 4.2a4 4 0 0 1-2.8 2.8L4 11l4 1.2a4 4 0 0 1 2.8 2.8L12 19l1.2-4a4 4 0 0 1 2.8-2.8L20 11l-4-1.2a4 4 0 0 1-2.8-2.8L12 3Z"></path>
+                    <path d="m19 16-.5 1.5L17 18l1.5.5L19 20l.5-1.5L21 18l-1.5-.5L19 16Z"></path>
+
+                </svg>
+
+            </div>
+
+            <div class="card-title">
+                Personal Bot
+            </div>
+
+            <div class="card-description">
+                Your general-purpose personal AI assistant for planning,
+                ideas, learning, productivity and everyday conversations.
+            </div>
+
+            <div class="card-footer">
+
+                <span class="launch-text">
+                    Open assistant
+                </span>
+
+                <div class="arrow">
+
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round">
+
+                        <path d="M5 12h14"></path>
+                        <path d="m13 6 6 6-6 6"></path>
+
+                    </svg>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="footer">
+        Select an assistant to continue
+    </div>
+
+</div>
+
+
+<script>
+
+    function openBot(bot) {
+
+        if (bot === "jobseeker") {
+
+            // Replace this with your JobSeeker endpoint
+            window.location.href = "/jobseeker/";
+
+        }
+
+        else if (bot === "personal") {
+
+            // Replace this with your Personal Bot endpoint
+            window.location.href = "/personal/";
+
+        }
+
+    }
+
+</script>
+
+</body>
+</html>
+
