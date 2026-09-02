@@ -8,6 +8,10 @@ from dotenv import load_dotenv #Steps---->  from dotenv import load_dotenv -----
 import time
 
 load_dotenv()
+key=os.environ.get("GROQ_API_KEY")
+print("KEY EXISTS:", key is not None)
+print("KEY LENGTH:", len(key) if key else 0)
+print("KEY PREFIX:", key[:10] if key else None)
 
 client = OpenAI(
     api_key=os.environ.get("GROQ_API_KEY"),

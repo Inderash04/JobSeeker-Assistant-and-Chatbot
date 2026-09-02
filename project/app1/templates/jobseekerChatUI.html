@@ -1,0 +1,1572 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>JobSeeker Assistant</title>
+
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+
+        body {
+
+            min-height: 100vh;
+
+            background:
+                radial-gradient(
+                    circle at 20% 10%,
+                    rgba(99, 102, 241, 0.08),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 80% 90%,
+                    rgba(45, 212, 191, 0.05),
+                    transparent 30%
+                ),
+                #0b0d10;
+
+            color: #f5f5f5;
+
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Roboto,
+                Helvetica,
+                Arial,
+                sans-serif;
+
+            display: flex;
+            justify-content: center;
+
+        }
+
+
+        /* =====================================
+           MAIN CHAT CONTAINER
+        ===================================== */
+
+        .chat-container {
+
+            width: 100%;
+            max-width: 950px;
+
+            height: 100vh;
+
+            display: flex;
+            flex-direction: column;
+
+            border-left: 1px solid #1e2229;
+            border-right: 1px solid #1e2229;
+
+            background: rgba(11, 13, 16, 0.92);
+
+        }
+
+
+        /* =====================================
+           HEADER
+        ===================================== */
+
+        .chat-header {
+
+            height: 72px;
+
+            padding: 0 24px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            border-bottom: 1px solid #20242b;
+
+            background: rgba(15, 17, 21, 0.95);
+
+            flex-shrink: 0;
+
+        }
+
+
+        .assistant-info {
+
+            display: flex;
+            align-items: center;
+            gap: 13px;
+
+        }
+
+
+        .assistant-icon {
+
+            width: 40px;
+            height: 40px;
+
+            border-radius: 11px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #6366f1,
+                    #8b5cf6
+                );
+
+            box-shadow:
+                0 0 20px rgba(99, 102, 241, 0.2);
+
+        }
+
+
+        .assistant-icon svg {
+
+            width: 21px;
+            height: 21px;
+
+            stroke: white;
+
+        }
+
+
+        .assistant-name {
+
+            font-size: 15px;
+            font-weight: 600;
+
+            margin-bottom: 3px;
+
+        }
+
+
+        .assistant-status {
+
+            display: flex;
+            align-items: center;
+            gap: 6px;
+
+            color: #737780;
+
+            font-size: 11px;
+
+        }
+
+
+        .status-dot {
+
+            width: 6px;
+            height: 6px;
+
+            border-radius: 50%;
+
+            background: #4ade80;
+
+            box-shadow:
+                0 0 8px rgba(74, 222, 128, 0.6);
+
+        }
+
+
+        .header-label {
+
+            color: #5e626a;
+
+            font-size: 11px;
+
+            letter-spacing: 1.5px;
+
+            text-transform: uppercase;
+
+        }
+
+
+        /* =====================================
+           MESSAGES AREA
+        ===================================== */
+
+        .messages {
+
+            flex: 1;
+
+            overflow-y: auto;
+
+            padding: 35px 25px 25px;
+
+            scroll-behavior: smooth;
+
+        }
+
+
+        /* Scrollbar */
+
+        .messages::-webkit-scrollbar {
+
+            width: 6px;
+
+        }
+
+
+        .messages::-webkit-scrollbar-track {
+
+            background: transparent;
+
+        }
+
+
+        .messages::-webkit-scrollbar-thumb {
+
+            background: #292d34;
+
+            border-radius: 10px;
+
+        }
+
+
+        /* =====================================
+           WELCOME MESSAGE
+        ===================================== */
+
+        .welcome {
+
+            max-width: 650px;
+
+            margin: 40px auto;
+
+            text-align: center;
+
+        }
+
+
+        .welcome-icon {
+
+            width: 55px;
+            height: 55px;
+
+            margin: 0 auto 20px;
+
+            border-radius: 16px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: rgba(99, 102, 241, 0.10);
+
+            border: 1px solid rgba(99, 102, 241, 0.20);
+
+        }
+
+
+        .welcome-icon svg {
+
+            width: 26px;
+            height: 26px;
+
+            stroke: #a78bfa;
+
+        }
+
+
+        .welcome h1 {
+
+            font-size: 26px;
+
+            letter-spacing: -0.5px;
+
+            margin-bottom: 10px;
+
+        }
+
+
+        .welcome p {
+
+            color: #747881;
+
+            font-size: 14px;
+
+            line-height: 1.6;
+
+        }
+
+
+        /* =====================================
+           MESSAGE
+        ===================================== */
+
+        .message-row {
+
+            width: 100%;
+
+            display: flex;
+
+            margin-bottom: 24px;
+
+        }
+
+
+        .message-row.user {
+
+            justify-content: flex-end;
+
+        }
+
+
+        .message-row.bot {
+
+            justify-content: flex-start;
+
+        }
+
+
+        .message-wrapper {
+
+            max-width: 75%;
+
+            display: flex;
+
+            flex-direction: column;
+
+        }
+
+
+        .message-row.user .message-wrapper {
+
+            align-items: flex-end;
+
+        }
+
+
+        .message-row.bot .message-wrapper {
+
+            align-items: flex-start;
+
+        }
+
+
+        .message {
+
+            padding: 13px 16px;
+
+            border-radius: 14px;
+
+            font-size: 14px;
+
+            line-height: 1.65;
+
+            white-space: pre-wrap;
+
+            word-break: break-word;
+
+        }
+
+
+        /* User */
+
+        .message-row.user .message {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #4f46e5,
+                    #6366f1
+                );
+
+            color: white;
+
+            border-bottom-right-radius: 4px;
+
+            box-shadow:
+                0 6px 20px rgba(79, 70, 229, 0.15);
+
+        }
+
+
+        /* Bot */
+
+        .message-row.bot .message {
+
+            background: #171a20;
+
+            border: 1px solid #252932;
+
+            color: #d7d9dd;
+
+            border-bottom-left-radius: 4px;
+
+        }
+
+
+        .message-time {
+
+            color: #50545c;
+
+            font-size: 10px;
+
+            margin-top: 6px;
+
+            padding: 0 4px;
+
+        }
+
+
+        /* =====================================
+           BOT AVATAR
+        ===================================== */
+
+        .bot-message-content {
+
+            display: flex;
+
+            align-items: flex-start;
+
+            gap: 10px;
+
+        }
+
+
+        .bot-avatar {
+
+            width: 30px;
+            height: 30px;
+
+            flex-shrink: 0;
+
+            border-radius: 9px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: rgba(99, 102, 241, 0.12);
+
+            border: 1px solid rgba(99, 102, 241, 0.18);
+
+        }
+
+
+        .bot-avatar svg {
+
+            width: 16px;
+            height: 16px;
+
+            stroke: #a78bfa;
+
+        }
+
+
+        /* =====================================
+           TYPING INDICATOR
+        ===================================== */
+
+        .typing {
+
+            display: none;
+
+            margin-bottom: 24px;
+
+        }
+
+
+        .typing.show {
+
+            display: flex;
+
+        }
+
+
+        .typing-bubble {
+
+            background: #171a20;
+
+            border: 1px solid #252932;
+
+            border-radius: 14px;
+
+            border-bottom-left-radius: 4px;
+
+            padding: 14px 17px;
+
+            display: flex;
+
+            gap: 5px;
+
+        }
+
+
+        .typing-dot {
+
+            width: 5px;
+            height: 5px;
+
+            background: #777b84;
+
+            border-radius: 50%;
+
+            animation: typing 1.2s infinite;
+
+        }
+
+
+        .typing-dot:nth-child(2) {
+
+            animation-delay: 0.15s;
+
+        }
+
+
+        .typing-dot:nth-child(3) {
+
+            animation-delay: 0.3s;
+
+        }
+
+
+        @keyframes typing {
+
+            0%, 60%, 100% {
+
+                transform: translateY(0);
+
+                opacity: 0.4;
+
+            }
+
+            30% {
+
+                transform: translateY(-4px);
+
+                opacity: 1;
+
+            }
+
+        }
+
+
+        /* =====================================
+           INPUT AREA
+        ===================================== */
+
+        .input-section {
+
+            padding: 16px 20px 20px;
+
+            border-top: 1px solid #20242b;
+
+            background: #0f1115;
+
+        }
+
+
+        .input-container {
+
+            max-width: 850px;
+
+            margin: auto;
+
+            display: flex;
+
+            align-items: flex-end;
+
+            gap: 10px;
+
+            background: #181b21;
+
+            border: 1px solid #292d35;
+
+            border-radius: 14px;
+
+            padding: 8px 8px 8px 16px;
+
+            transition: border-color 0.2s ease;
+
+        }
+
+
+        .input-container:focus-within {
+
+            border-color: #414652;
+
+        }
+
+
+        textarea {
+
+            flex: 1;
+
+            resize: none;
+
+            border: none;
+
+            outline: none;
+
+            background: transparent;
+
+            color: #ededed;
+
+            font-family: inherit;
+
+            font-size: 14px;
+
+            line-height: 1.5;
+
+            max-height: 140px;
+
+            min-height: 24px;
+
+        }
+
+
+        textarea::placeholder {
+
+            color: #5f636b;
+
+        }
+
+
+        .send-button {
+
+            width: 40px;
+            height: 40px;
+
+            flex-shrink: 0;
+
+            border: none;
+
+            border-radius: 10px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: #6366f1;
+
+            cursor: pointer;
+
+            transition:
+                background 0.2s ease,
+                transform 0.2s ease;
+
+        }
+
+
+        .send-button:hover {
+
+            background: #7476f4;
+
+            transform: translateY(-1px);
+
+        }
+
+
+        .send-button:disabled {
+
+            background: #30333a;
+
+            cursor: not-allowed;
+
+            transform: none;
+
+        }
+
+
+        .send-button svg {
+
+            width: 18px;
+            height: 18px;
+
+            stroke: white;
+
+        }
+
+
+        .input-hint {
+
+            max-width: 850px;
+
+            margin: 8px auto 0;
+
+            color: #4f535b;
+
+            font-size: 10px;
+
+            text-align: center;
+
+        }
+
+
+        /* =====================================
+           ERROR
+        ===================================== */
+
+        .error {
+
+            display: none;
+
+            max-width: 850px;
+
+            margin: 0 auto 10px;
+
+            padding: 10px 14px;
+
+            border-radius: 8px;
+
+            background: #211819;
+
+            border: 1px solid #4b2c2c;
+
+            color: #dc7663;
+
+            font-size: 12px;
+
+        }
+
+
+        .error.show {
+
+            display: block;
+
+        }
+
+
+        /* =====================================
+           RESPONSIVE
+        ===================================== */
+
+        @media (max-width: 700px) {
+
+            .chat-header {
+
+                padding: 0 15px;
+
+            }
+
+            .header-label {
+
+                display: none;
+
+            }
+
+            .messages {
+
+                padding: 25px 14px;
+
+            }
+
+            .message-wrapper {
+
+                max-width: 88%;
+
+            }
+
+            .input-section {
+
+                padding: 12px;
+
+            }
+
+            .welcome h1 {
+
+                font-size: 22px;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="chat-container">
+
+
+    <!-- =====================================
+         HEADER
+    ====================================== -->
+
+    <header class="chat-header">
+
+        <div class="assistant-info">
+
+            <div class="assistant-icon">
+
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round">
+
+                    <path d="M12 3l1.2 4.2a4 4 0 0 0 2.8 2.8L20 11l-4 1.2a4 4 0 0 0-2.8 2.8L12 19l-1.2-4a4 4 0 0 0-2.8-2.8L4 11l4-1.2a4 4 0 0 0 2.8-2.8L12 3z"/>
+
+                </svg>
+
+            </div>
+
+
+            <div>
+
+                <div class="assistant-name">
+                    JobSeeker Assistant
+                </div>
+
+                <div class="assistant-status">
+
+                    <span class="status-dot"></span>
+
+                    Online
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="header-label">
+            Career Intelligence
+        </div>
+
+    </header>
+
+
+
+    <!-- =====================================
+         MESSAGES
+    ====================================== -->
+
+    <main
+        class="messages"
+        id="messages"
+    >
+
+
+        <!-- Welcome -->
+
+        <div
+            class="welcome"
+            id="welcome"
+        >
+
+            <div class="welcome-icon">
+
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round">
+
+                    <path d="M12 3l1.2 4.2a4 4 0 0 0 2.8 2.8L20 11l-4 1.2a4 4 0 0 0-2.8 2.8L12 19l-1.2-4a4 4 0 0 0-2.8-2.8L4 11l4-1.2a4 4 0 0 0 2.8-2.8L12 3z"/>
+
+                </svg>
+
+            </div>
+
+
+            <h1>
+                What can I help you with?
+            </h1>
+
+
+            <p>
+                Ask me about your resume, GitHub profile,
+                job applications, interview preparation,
+                career gaps, or anything related to your job search.
+            </p>
+
+        </div>
+
+
+        <!-- Typing -->
+
+        <div
+            class="message-row bot typing"
+            id="typing"
+        >
+
+            <div class="bot-message-content">
+
+                <div class="bot-avatar">
+
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round">
+
+                        <path d="M12 3l1.2 4.2a4 4 0 0 0 2.8 2.8L20 11l-4 1.2a4 4 0 0 0-2.8 2.8L12 19l-1.2-4a4 4 0 0 0-2.8-2.8L4 11l4-1.2a4 4 0 0 0-2.8-2.8L12 3z"/>
+
+                    </svg>
+
+                </div>
+
+
+                <div class="typing-bubble">
+
+                    <span class="typing-dot"></span>
+                    <span class="typing-dot"></span>
+                    <span class="typing-dot"></span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </main>
+
+
+
+    <!-- =====================================
+         INPUT
+    ====================================== -->
+
+    <section class="input-section">
+
+
+        <div
+            class="error"
+            id="errorMessage"
+        ></div>
+
+
+        <div class="input-container">
+
+
+            <textarea
+                id="messageInput"
+                rows="1"
+                placeholder="Ask your JobSeeker Assistant..."
+            ></textarea>
+
+
+            <button
+                class="send-button"
+                id="sendButton"
+                onclick="sendMessage()"
+            >
+
+                <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round">
+
+                    <line
+                        x1="22"
+                        y1="2"
+                        x2="11"
+                        y2="13"
+                    ></line>
+
+                    <polygon
+                        points="22 2 15 22 11 13 2 9 22 2"
+                    ></polygon>
+
+                </svg>
+
+            </button>
+
+
+        </div>
+
+
+        <div class="input-hint">
+            Press Enter to send · Shift + Enter for a new line
+        </div>
+
+
+    </section>
+
+
+</div>
+
+
+
+<script>
+
+
+    /* ==========================================
+       API CONFIG
+    ========================================== */
+
+    const API_URL =
+        "http://127.0.0.1:8000/app1/query_job_seeker/";
+
+
+    /* ==========================================
+       ELEMENTS
+    ========================================== */
+
+    const messagesContainer =
+        document.getElementById("messages");
+
+    const messageInput =
+        document.getElementById("messageInput");
+
+    const sendButton =
+        document.getElementById("sendButton");
+
+    const typing =
+        document.getElementById("typing");
+
+    const welcome =
+        document.getElementById("welcome");
+
+    const errorMessage =
+        document.getElementById("errorMessage");
+
+
+    /* ==========================================
+       SEND MESSAGE
+    ========================================== */
+
+    async function sendMessage() {
+
+
+        const message =
+            messageInput.value.trim();
+
+
+        /* -----------------------------
+           Don't send empty messages
+        ----------------------------- */
+
+        if (!message) {
+            return;
+        }
+
+
+        /* -----------------------------
+           Get token
+        ----------------------------- */
+
+        const token =
+            localStorage.getItem("token");
+
+
+        if (!token) {
+
+            showError(
+                "Authentication token not found. Please log in again."
+            );
+
+            return;
+        }
+
+
+        /* -----------------------------
+           Hide welcome screen
+        ----------------------------- */
+
+        welcome.style.display = "none";
+
+
+        /* -----------------------------
+           Add user message
+        ----------------------------- */
+
+        addUserMessage(message);
+
+
+        /* -----------------------------
+           Clear input
+        ----------------------------- */
+
+        messageInput.value = "";
+
+        resizeTextarea();
+
+
+        /* -----------------------------
+           Loading
+        ----------------------------- */
+
+        setLoading(true);
+
+
+        try {
+
+
+            /* =================================
+               API REQUEST
+            ================================= */
+
+            const response = await fetch(
+                API_URL,
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Authorization":
+                            `Token ${token}`,
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body: JSON.stringify({
+
+                        message: message
+
+                    })
+
+                }
+            );
+
+
+            /* =================================
+               Parse response
+            ================================= */
+
+            let data = {};
+
+            try {
+
+                data =
+                    await response.json();
+
+            }
+            catch (e) {
+
+                console.error(
+                    "Could not parse response:",
+                    e
+                );
+
+            }
+
+
+            /* =================================
+               Handle HTTP errors
+            ================================= */
+
+            if (!response.ok) {
+
+                const error =
+                    data.error ||
+                    "Something went wrong.";
+
+                throw new Error(error);
+
+            }
+
+
+            /* =================================
+               Bot response
+            ================================= */
+
+            const botReply =
+                data.bot_reply;
+
+
+            if (!botReply) {
+
+                throw new Error(
+                    "The server returned an empty response."
+                );
+
+            }
+
+
+            console.log(
+                "Bot response:",
+                botReply
+            );
+
+
+            /* =================================
+               Display bot response
+            ================================= */
+
+            addBotMessage(botReply);
+
+
+        }
+        catch (error) {
+
+
+            console.error(
+                "Request error:",
+                error
+            );
+
+
+            addBotMessage(
+                "Sorry, I couldn't process that request. Please try again."
+            );
+
+
+            showError(
+                error.message ||
+                "Unable to connect to the server."
+            );
+
+
+        }
+        finally {
+
+            setLoading(false);
+
+        }
+
+    }
+
+
+    /* ==========================================
+       ADD USER MESSAGE
+    ========================================== */
+
+    function addUserMessage(message) {
+
+
+        const row =
+            document.createElement("div");
+
+        row.className =
+            "message-row user";
+
+
+        const wrapper =
+            document.createElement("div");
+
+        wrapper.className =
+            "message-wrapper";
+
+
+        const messageElement =
+            document.createElement("div");
+
+        messageElement.className =
+            "message";
+
+
+        messageElement.textContent =
+            message;
+
+
+        const time =
+            document.createElement("div");
+
+        time.className =
+            "message-time";
+
+        time.textContent =
+            getCurrentTime();
+
+
+        wrapper.appendChild(
+            messageElement
+        );
+
+        wrapper.appendChild(
+            time
+        );
+
+        row.appendChild(
+            wrapper
+        );
+
+
+        messagesContainer.appendChild(
+            row
+        );
+
+
+        scrollToBottom();
+
+    }
+
+
+    /* ==========================================
+       ADD BOT MESSAGE
+    ========================================== */
+
+    function addBotMessage(message) {
+
+
+        const row =
+            document.createElement("div");
+
+        row.className =
+            "message-row bot";
+
+
+        const content =
+            document.createElement("div");
+
+        content.className =
+            "bot-message-content";
+
+
+        /* -----------------------------
+           Avatar
+        ----------------------------- */
+
+        const avatar =
+            document.createElement("div");
+
+        avatar.className =
+            "bot-avatar";
+
+
+        avatar.innerHTML = `
+
+            <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round">
+
+                <path d="M12 3l1.2 4.2a4 4 0 0 0 2.8 2.8L20 11l-4 1.2a4 4 0 0 0-2.8 2.8L12 19l-1.2-4a4 4 0 0 0-2.8-2.8L4 11l4-1.2a4 4 0 0 0 2.8-2.8L12 3z"/>
+
+            </svg>
+
+        `;
+
+
+        /* -----------------------------
+           Wrapper
+        ----------------------------- */
+
+        const wrapper =
+            document.createElement("div");
+
+        wrapper.className =
+            "message-wrapper";
+
+
+        /* -----------------------------
+           Message
+        ----------------------------- */
+
+        const messageElement =
+            document.createElement("div");
+
+        messageElement.className =
+            "message";
+
+
+        messageElement.textContent =
+            message;
+
+
+        /* -----------------------------
+           Time
+        ----------------------------- */
+
+        const time =
+            document.createElement("div");
+
+        time.className =
+            "message-time";
+
+        time.textContent =
+            getCurrentTime();
+
+
+        wrapper.appendChild(
+            messageElement
+        );
+
+        wrapper.appendChild(
+            time
+        );
+
+
+        content.appendChild(
+            avatar
+        );
+
+        content.appendChild(
+            wrapper
+        );
+
+
+        row.appendChild(
+            content
+        );
+
+
+        messagesContainer.appendChild(
+            row
+        );
+
+
+        scrollToBottom();
+
+    }
+
+
+    /* ==========================================
+       LOADING
+    ========================================== */
+
+    function setLoading(isLoading) {
+
+
+        if (isLoading) {
+
+            typing.classList.add("show");
+
+            sendButton.disabled = true;
+
+            messageInput.disabled = true;
+
+            hideError();
+
+            scrollToBottom();
+
+        }
+
+        else {
+
+            typing.classList.remove("show");
+
+            sendButton.disabled = false;
+
+            messageInput.disabled = false;
+
+            messageInput.focus();
+
+        }
+
+    }
+
+
+    /* ==========================================
+       ERROR
+    ========================================== */
+
+    function showError(message) {
+
+        errorMessage.textContent =
+            message;
+
+        errorMessage.classList.add(
+            "show"
+        );
+
+    }
+
+
+    function hideError() {
+
+        errorMessage.classList.remove(
+            "show"
+        );
+
+    }
+
+
+    /* ==========================================
+       SCROLL
+    ========================================== */
+
+    function scrollToBottom() {
+
+        messagesContainer.scrollTop =
+            messagesContainer.scrollHeight;
+
+    }
+
+
+    /* ==========================================
+       TIME
+    ========================================== */
+
+    function getCurrentTime() {
+
+        return new Date().toLocaleTimeString(
+            [],
+            {
+                hour: "2-digit",
+                minute: "2-digit"
+            }
+        );
+
+    }
+
+
+    /* ==========================================
+       AUTO RESIZE TEXTAREA
+    ========================================== */
+
+    function resizeTextarea() {
+
+        messageInput.style.height =
+            "auto";
+
+        messageInput.style.height =
+            Math.min(
+                messageInput.scrollHeight,
+                140
+            ) + "px";
+
+    }
+
+
+    messageInput.addEventListener(
+        "input",
+        resizeTextarea
+    );
+
+
+    /* ==========================================
+       ENTER TO SEND
+    ========================================== */
+
+    messageInput.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (
+                event.key === "Enter" &&
+                !event.shiftKey
+            ) {
+
+                event.preventDefault();
+
+                sendMessage();
+
+            }
+
+        }
+    );
+
+
+    /* ==========================================
+       INITIAL FOCUS
+    ========================================== */
+
+    messageInput.focus();
+
+
+</script>
+
+
+</body>
+
+</html>

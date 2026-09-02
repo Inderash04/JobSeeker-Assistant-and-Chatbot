@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import login_auth,home_view,chatUIPage,Analytics,query_bot_chat,read_profile,query_job_seeker,selectbot
+from .views import login_auth,home_view,chatUIPage,Analytics,query_bot_chat,read_profile,query_job_seeker,selectbot,jobseekerdetails,jobseekerChatUI
 urlpatterns = [
     path('login/',login_auth.as_view()),
     path('query_bot_chat/',query_bot_chat.as_view()),
@@ -8,6 +8,8 @@ urlpatterns = [
     path('chat/',chatUIPage),
     path('botselection/',selectbot),
     path('analytics/',Analytics.as_view()),
+    path('jobseekerdetails/',jobseekerdetails),
+    path('jobseekerChatUI/',jobseekerChatUI),
     path('',home_view),
     
 ]

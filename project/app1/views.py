@@ -29,6 +29,12 @@ def chatUIPage(request):
 def selectbot(request):
     return render(request,'selectbot.html')
 
+def jobseekerdetails(request):
+    return render(request,'jobseekerUI.html')
+
+def jobseekerChatUI(request):
+    return render(request,'jobseekerChatUI.html')
+
 #CSRF authentication bypass
 from rest_framework.authentication import SessionAuthentication
 
@@ -163,7 +169,7 @@ class read_profile(APIView):
             )
 
 
-        return Response({"status":status.HTTP_200_OK,"message":"passed through read_profile api"})
+        return Response({"message":"passed through read_profile api"},status.HTTP_200_OK)
 
 
         
@@ -228,7 +234,7 @@ class query_job_seeker(APIView):
         else:
             count=int(count)
             if count > 5:
-                return Response({"error": "Message limit reached for today.",status:status.HTTP_429_TOO_MANY_REQUESTS})
+                return Response({"error": "Message limit reached for today."},status=status.HTTP_429_TOO_MANY_REQUESTS)
 
             else:
                 redis_client.incr(count_key)
@@ -238,12 +244,12 @@ class query_job_seeker(APIView):
             data=request.data
             user_message=data.get("message")
             if not user_message:
-                return Response({"error":"Message is required",status:status.HTTP_400_BAD_REQUEST})
+                return Response({"error":"Message is required"},status=status.HTTP_400_BAD_REQUEST)
             bot_reply=chat_with_tools(request, user_message)
         except Exception as e:
-            return Response({"error":f"error message is {str(e)}","status":status.HTTP_404_NOT_FOUND})
+            return Response({"error":f"error message is {str(e)}"},status=status.HTTP_404_NOT_FOUND)
 
-        return Response({"bot_reply":bot_reply,status:status.HTTP_200_OK})
+        return Response({"bot_reply":bot_reply},status=status.HTTP_200_OK)
 
 
 
