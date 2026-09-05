@@ -15,7 +15,9 @@ from .redis_client import redis_client # <----- here is redis server only
 #token related
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
+import logging
 
+logger=logging.getLogger(__name__)
 
 from django.shortcuts import render
 #calling the chatbot login template
@@ -51,47 +53,52 @@ class login_auth(APIView):
         message=request.data
         
         serializer=LoginApiSerializer(data=message)
-
-        if serializer.is_valid():
-            name=serializer.validated_data.get("name")
-            phone=serializer.validated_data.get("phone")
-            
-            obj=User.objects.filter(username=name).first()
-            #if first time logging in
-            if not obj:
-                #first timer logging in->we are checking if username entered does not already 
-                # exist as username in auth_user is unique
-
-                # **imporant**
-                o1=User.objects.create_user(username=name,password=phone) #create auth_user table entry
-                UserProfile.objects.create(user=o1,name=name,phone=phone) #add userprofiel table entry too
-                ret["username old/new"]=["new"]
-            else:
-                ret["username old/new"]=["old"]
-                ret["error_msg"]=["checking existing username"]
-
-            #if not first time-> he would have an auth_user table entry->directly authenticate
-            #authenticate
-
-            user=authenticate(username=name,password=phone)
-            if user is not None:
-                #token generation if the user exists in auth_user table, token created in auth_token
-                token,created=Token.objects.get_or_create(user=user)
-                ret["token"]=str(token)
-                ret["status"]=["logged in"]
-                ret["status_code"]=200
-                return Response(ret)
+        logger.info("Login request received")
+        try:
+            if serializer.is_valid():
+                name=serializer.validated_data.get("name")
+                phone=serializer.validated_data.get("phone")
                 
-            if user is None:
-                ret["error_msg"]=["Wrong password/Invalid"]
-                ret["status_code"]=401
-                return Response(ret)
-        
-        else:
-            #invalid entry or mobile number exceeding 10 digits
-            return Response({"error":"invalid entry or mobile number exceeding 10 digits"})
+                obj=User.objects.filter(username=name).first()
+                #if first time logging in
+                if not obj:
+                    #first timer logging in->we are checking if username entered does not already 
+                    # exist as username in auth_user is unique
 
-        return Response({"error":"invalid credentials"})
+                    # **imporant**
+                    logger.info(f"First time user username:{name}")
+
+                    o1=User.objects.create_user(username=name,password=phone) #create auth_user table entry
+                    UserProfile.objects.create(user=o1,name=name,phone=phone) #add userprofiel table entry too
+                    ret["username old/new"]=["new"]
+                else:
+                    ret["username old/new"]=["old"]
+                    ret["error_msg"]=["checking existing username"]
+                    logger.info(f"Alread existing user username:{name}")
+
+                #if not first time-> he would have an auth_user table entry->directly authenticate
+                #authenticate
+
+                user=authenticate(username=name,password=phone)
+                if user is not None:
+                    #token generation if the user exists in auth_user table, token created in auth_token
+                    token,created=Token.objects.get_or_create(user=user)
+                    ret["token"]=str(token)
+                    ret["status"]=["logged in"]
+                    ret["status_code"]=200
+                    return Response(ret)
+                    
+                if user is None:
+                    ret["error_msg"]=["Wrong password/Invalid"]
+                    ret["status_code"]=401
+                    return Response(ret)
+            
+            else:
+                #invalid entry or mobile number exceeding 10 digits
+                return Response({"error":"invalid entry or mobile number exceeding 10 digits"})
+        except Exception as e:
+            logger.exception("Logging API failed")
+            return Response({"error":"invalid credentials"})
             
 from .llm import LLM_bot
 from .models import *
@@ -118,10 +125,12 @@ class read_profile(APIView):
 
     def post(self,request):
         pdf_file=request.FILES.get("pdf",None)
+        username=request.user.username
         github_username=request.data.get("github_username")
-        option = request.data.get("option")  # "Gap Analysis" | "Live Listings" | "Compare Resume"
-        location=request.data.get("location")
-        job_title=request.data.get("job_title")
+
+
+        #location=request.data.get("location")
+        #job_title=request.data.get("job_title")
         
         #-------------------------------------------------
         # BLOCK 1: Resume handling — independent
@@ -130,12 +139,15 @@ class read_profile(APIView):
         if pdf_file is not None:
             #if pdf file is provided
             if pdf_file is None:
+                logger.info(f"{username} added pdf file")
                 return Response({"error":"no file received.Expected resume file "},status.HTTP_400_BAD_REQUEST)
 
             if not pdf_file.name.lower().endswith(".pdf"):
+                logger.error(f"{username} added file which is not a pdf")
                 return Response({"error":"Not a pdf file.Expected file is .pdf"},status.HTTP_400_BAD_REQUEST)
 
             if pdf_file.size > MAX_UPLOAD_SIZE_MB * 1024 * 1024:
+                logger.error(f"{username} added a file that is too large")
                 return Response({"error": f"File too large. Max {MAX_UPLOAD_SIZE_MB}MB."},status=status.HTTP_400_BAD_REQUEST,)
 
             try:
@@ -145,6 +157,7 @@ class read_profile(APIView):
             except ValueError as e:
                 return Response({"error":f"{str(e)}"},status.HTTP_422_UNPROCESSABLE_ENTITY) 
             except Exception as e:
+                logger.exception("read_profile api error")
                 return Response({"error":f"error is {str(e)}"},status.HTTP_400_BAD_REQUEST)
             
         #-------------------------------------------------
@@ -152,7 +165,7 @@ class read_profile(APIView):
         #-------------------------------------------------
         github_summary=None
         if github_username:
-
+            logger.info("user added github username")
             #enter the github summary into the existing model obj, if doesn't exist then make one and save
             obj,created=Resume.objects.get_or_create(user=UserProfile.objects.get(user=request.user),github_username=github_username)
             github_summary=summarize_profile(github_username)
@@ -163,12 +176,12 @@ class read_profile(APIView):
         # BLOCK 3: None is given
         #-------------------------------------------------
         if resume_summary is None and github_summary is None:
+            logger.info("Neither resume or github username was provided")
             return Response(
                 {"error": "Provide at least a resume or a GitHub username."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
-
+    
         return Response({"message":"passed through read_profile api"},status.HTTP_200_OK)
 
 
@@ -269,25 +282,30 @@ class query_bot_chat(APIView):
         if count is None:
             redis_client.set(count_key,1)
             redis_client.expire(count_key,86400)
+            logger.info("Redis daily chat limit checked")
         else:
             count=int(count)
             if count > 5:
                 return Response({"message": "Message limit reached for today."},
                 status=status.HTTP_429_TOO_MANY_REQUESTS)
+                logger.info("Exceeded daily chat limit from redis ")
             else:
                 redis_client.incr(count_key)
 #------------------------------------------------------------
         try:
             data=request.data
             user_message=data.get("message")
+            logger.info(f"User messaged: {user_message}")
             message=user_llm_interaction("user",user_message,request)
             #return_obj=LLM_bot(message)
             ret["status_code"]=200
             ret["bot message"]=message
             return Response({"response":ret})
+            logger.info(f"Bot messaged: {message}")
         except Exception as e:
             ret["status_code"]=400
             ret["error"]=str(e)
+            logger.exception("query_bot_chat API failed")
             return Response({"response":ret})
 
 
@@ -307,8 +325,9 @@ def user_llm_interaction(label,message,request):
         username=request.user.username #user name taken from login auth
         user_profile_obj=UserProfile.objects.filter(user__username=username).first()
         #save the messag from user to message history
+        logger.info("user message passed to user_llm_interaction")
         messages=update_redis_cache("user",message,request)
-
+        logger.info("redis cache updated for recent messages----sending to LLM_bot function")
         bot_data=LLM_bot(messages)
         bot_message=bot_data.get("bot_message")
 #------------------------------------------------------------------------
@@ -381,6 +400,7 @@ def user_llm_interaction(label,message,request):
         #return the lllm fetched answer
         return bot_message 
     except Exception as e:
+        logger.exception("error occured in user_llm_interaction")
         return f"error is : {str(e)}"
 #needs to be fixed for production
 
@@ -419,8 +439,10 @@ class Analytics(APIView):
             user=request.user.username
             user_obj=UserProfile.objects.filter(user__username=user).first()
             serializer=AnalyticsSerializer(instance=user_obj)
+            logger.info("Analytics api called - 200 ok")
             return Response(serializer.data)
         except Exception as e:
+            logger.exception("Analytics API error inside views.Analytics")
             return Response({"error from Analtics api:":str(e)})
 
 

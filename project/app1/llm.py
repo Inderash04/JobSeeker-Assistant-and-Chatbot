@@ -6,6 +6,8 @@ from dotenv import load_dotenv #Steps---->  from dotenv import load_dotenv -----
 # ---->then use os.environ.get("GROQ_API_KEY")
 
 import time
+import logging
+logger=logging.getLogger(__name__)
 
 load_dotenv()
 key=os.environ.get("GROQ_API_KEY")
@@ -19,14 +21,18 @@ client = OpenAI(
 )
 
 def LLM_bot(messages):
+    logger.info("message sent to LLM_bot func")
     ret_d={}
     start=time.time()
-    response = client.chat.completions.create(
-        model="openai/gpt-oss-20b",
-        messages=messages,
-        
-        
-    )
+    try:
+        response = client.chat.completions.create(
+            model="openai/gpt-oss-20b",
+            messages=messages,
+            
+            
+        )
+    except Exception as e:
+        logger.exception("Received some error from LLM")
     elapsed_time=time.time()-start
     usage = response.usage
     prompt_tokens = usage.prompt_tokens
@@ -39,24 +45,33 @@ def LLM_bot(messages):
     ret_d["completion_tokens"]=completion_tokens
     ret_d["total_tokens"]=total_tokens
     ret_d["elapsed_time"]=elapsed_time
-    
+    logger.info("exiting LLM_bot func")
     return ret_d
 
 
 def LLM_to_MCP(messages, tools=None):
     ret_d = {}
-    response = client.chat.completions.create(
+    logger.info("JobSeeker request sent to LLM_to_MCP")
+    try:
+        response = client.chat.completions.create(
         model="openai/gpt-oss-20b",
         messages=messages,
         tools=tools,          # <-- pass tool definitions
         tool_choice="auto" if tools else None,
-    )
-    usage = response.usage
-    message = response.choices[0].message
-    ret_d["bot_message"] = message.content
-    ret_d["tool_calls"] = message.tool_calls   # <-- None, or a list of calls the model wants to make
-    ret_d["raw_message"] = message              # keep the full message object — you'll need to append it back
+        )
+        logger.info("JobSeeker LLM 200 OK")
 
+    except Exception as e:
+        logger.exception("LLM_to_MCP failed")
+
+    try:
+        usage = response.usage
+        message = response.choices[0].message
+        ret_d["bot_message"] = message.content
+        ret_d["tool_calls"] = message.tool_calls   # <-- None, or a list of calls the model wants to make
+        ret_d["raw_message"] = message              # keep the full message object — you'll need to append it back
+    except Exception as e:
+        logger.exception("Error in fetching details from response of function LLM_to_MCP")
     return ret_d
 
 #-------------------------------------------------
@@ -123,7 +138,8 @@ def chat_with_tools(request, user_message: str) -> str:
     messages = [{"role": "user", "content": user_message}]
 
     result = LLM_to_MCP(messages, tools=TOOLS)
-
+    logger.info("chat_with_tools function called")
+    
     if result["tool_calls"]:
         # Append the assistant's tool-call message back into history — required by the API
         messages.append(result["raw_message"])
