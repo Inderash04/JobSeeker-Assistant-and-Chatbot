@@ -60,3 +60,326 @@ Traceback (most recent call last):
 UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
 2026-09-04 15:06:13,587 | INFO | django.server | "POST /app1/query_bot_chat/ HTTP/1.1" 200 139
 2026-09-04 15:06:13,592 | INFO | django.server | "GET /app1/analytics/ HTTP/1.1" 200 98
+2026-09-05 18:40:47,594 | INFO | django.utils.autoreload | Watching for file changes with StatReloader
+2026-09-05 18:40:50,979 | INFO | django.server | "GET /app1/ HTTP/1.1" 200 5816
+2026-09-05 18:40:51,337 | WARNING | django.request | Not Found: /favicon.ico
+2026-09-05 18:40:51,337 | WARNING | django.server | "GET /favicon.ico HTTP/1.1" 404 2357
+2026-09-05 18:40:54,713 | INFO | app1.views | Login request received
+2026-09-05 18:40:54,719 | INFO | app1.views | Alread existing user username:ishu
+2026-09-05 18:40:54,910 | INFO | django.server | "POST /app1/login/ HTTP/1.1" 200 163
+2026-09-05 18:40:54,919 | INFO | django.server | "GET /app1/botselection/ HTTP/1.1" 200 11178
+2026-09-05 18:40:56,781 | INFO | django.server | "GET /app1/chat/ HTTP/1.1" 200 8668
+2026-09-05 18:40:56,791 | INFO | app1.views | Analytics api called - 200 ok
+2026-09-05 18:40:56,792 | INFO | django.server | "GET /app1/analytics/ HTTP/1.1" 200 98
+2026-09-05 18:40:59,166 | INFO | app1.views | Redis daily chat limit checked
+2026-09-05 18:40:59,166 | INFO | app1.views | User messaged: hi
+2026-09-05 18:40:59,168 | INFO | app1.views | user message passed to user_llm_interaction
+2026-09-05 18:40:59,169 | INFO | app1.views | redis cache updated for recent messages----sending to LLM_bot function
+2026-09-05 18:40:59,169 | INFO | app1.llm | message sent to LLM_bot func
+2026-09-05 18:40:59,445 | ERROR | app1.llm | Received some error from LLM
+Traceback (most recent call last):
+  File "/Users/inderashsahu/Desktop/api/project/app1/llm.py", line 28, in LLM_bot
+    response = client.chat.completions.create(
+        model="openai/gpt-oss-20b",
+    ...<2 lines>...
+    
+    )
+  File "/Users/inderashsahu/Desktop/api/venv/lib/python3.14/site-packages/openai/_utils/_utils.py", line 298, in wrapper
+    return func(*args, **kwargs)
+  File "/Users/inderashsahu/Desktop/api/venv/lib/python3.14/site-packages/openai/resources/chat/completions/completions.py", line 1251, in create
+    return self._post(
+           ~~~~~~~~~~^
+        "/chat/completions",
+        ^^^^^^^^^^^^^^^^^^^^
+    ...<52 lines>...
+        stream_cls=Stream[ChatCompletionChunk],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/inderashsahu/Desktop/api/venv/lib/python3.14/site-packages/openai/_base_client.py", line 1332, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/inderashsahu/Desktop/api/venv/lib/python3.14/site-packages/openai/_base_client.py", line 1105, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.AuthenticationError: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-09-05 18:40:59,446 | ERROR | app1.views | error occured in user_llm_interaction
+Traceback (most recent call last):
+  File "/Users/inderashsahu/Desktop/api/project/app1/views.py", line 331, in user_llm_interaction
+    bot_data=LLM_bot(messages)
+  File "/Users/inderashsahu/Desktop/api/project/app1/llm.py", line 37, in LLM_bot
+    usage = response.usage
+            ^^^^^^^^
+UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+2026-09-05 18:40:59,447 | INFO | django.server | "POST /app1/query_bot_chat/ HTTP/1.1" 200 139
+2026-09-05 18:40:59,452 | INFO | app1.views | Analytics api called - 200 ok
+2026-09-05 18:40:59,452 | INFO | django.server | "GET /app1/analytics/ HTTP/1.1" 200 98
+2026-09-08 11:52:44,936 | INFO | django.utils.autoreload | Watching for file changes with StatReloader
+2026-09-08 11:52:50,606 | INFO | django.server | "GET /app1/ HTTP/1.1" 200 5816
+2026-09-08 11:52:51,332 | WARNING | django.request | Not Found: /favicon.ico
+2026-09-08 11:52:51,332 | WARNING | django.server | "GET /favicon.ico HTTP/1.1" 404 2357
+2026-09-08 11:52:55,734 | INFO | app1.views | Login request received
+2026-09-08 11:52:55,737 | INFO | app1.views | Alread existing user username:ishu
+2026-09-08 11:52:55,916 | INFO | django.server | "POST /app1/login/ HTTP/1.1" 200 163
+2026-09-08 11:52:55,925 | INFO | django.server | "GET /app1/botselection/ HTTP/1.1" 200 11178
+2026-09-08 11:53:08,544 | INFO | django.server | "GET /app1/chat/ HTTP/1.1" 200 8668
+2026-09-08 11:53:08,562 | INFO | app1.views | Analytics api called - 200 ok
+2026-09-08 11:53:08,563 | INFO | django.server | "GET /app1/analytics/ HTTP/1.1" 200 98
+2026-09-08 11:53:13,390 | INFO | app1.views | Redis daily chat limit checked
+2026-09-08 11:53:13,391 | INFO | app1.views | User messaged: gi
+2026-09-08 11:53:13,392 | INFO | app1.views | user message passed to user_llm_interaction
+2026-09-08 11:53:13,393 | INFO | app1.views | redis cache updated for recent messages----sending to LLM_bot function
+2026-09-08 11:53:13,393 | INFO | app1.llm | message sent to LLM_bot func
+2026-09-08 11:53:13,698 | ERROR | app1.llm | Received some error from LLM
+Traceback (most recent call last):
+  File "/Users/inderashsahu/Desktop/api/project/app1/llm.py", line 28, in LLM_bot
+    response = client.chat.completions.create(
+        model="openai/gpt-oss-20b",
+    ...<2 lines>...
+    
+    )
+  File "/Users/inderashsahu/Desktop/api/venv/lib/python3.14/site-packages/openai/_utils/_utils.py", line 298, in wrapper
+    return func(*args, **kwargs)
+  File "/Users/inderashsahu/Desktop/api/venv/lib/python3.14/site-packages/openai/resources/chat/completions/completions.py", line 1251, in create
+    return self._post(
+           ~~~~~~~~~~^
+        "/chat/completions",
+        ^^^^^^^^^^^^^^^^^^^^
+    ...<52 lines>...
+        stream_cls=Stream[ChatCompletionChunk],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/inderashsahu/Desktop/api/venv/lib/python3.14/site-packages/openai/_base_client.py", line 1332, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/inderashsahu/Desktop/api/venv/lib/python3.14/site-packages/openai/_base_client.py", line 1105, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.AuthenticationError: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-09-08 11:53:13,704 | ERROR | app1.views | error occured in user_llm_interaction
+Traceback (most recent call last):
+  File "/Users/inderashsahu/Desktop/api/project/app1/views.py", line 331, in user_llm_interaction
+    bot_data=LLM_bot(messages)
+  File "/Users/inderashsahu/Desktop/api/project/app1/llm.py", line 37, in LLM_bot
+    usage = response.usage
+            ^^^^^^^^
+UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+2026-09-08 11:53:13,705 | INFO | django.server | "POST /app1/query_bot_chat/ HTTP/1.1" 200 139
+2026-09-08 11:53:13,709 | INFO | app1.views | Analytics api called - 200 ok
+2026-09-08 11:53:13,710 | INFO | django.server | "GET /app1/analytics/ HTTP/1.1" 200 98
+2026-09-08 11:54:51,324 | INFO | django.server | "GET /app1/jobseekerdetails/ HTTP/1.1" 200 23885
+2026-09-08 12:02:12,676 | INFO | django.utils.autoreload | Watching for file changes with StatReloader
+2026-09-08 12:02:15,818 | INFO | django.server | "GET /app1/chat/ HTTP/1.1" 200 8668
+2026-09-08 12:02:15,840 | INFO | app1.views | Analytics api called - 200 ok
+2026-09-08 12:02:15,841 | INFO | django.server | "GET /app1/analytics/ HTTP/1.1" 200 98
+2026-09-08 12:10:33,218 | INFO | django.utils.autoreload | Watching for file changes with StatReloader
+2026-09-08 12:10:50,690 | INFO | django.utils.autoreload | Watching for file changes with StatReloader
+2026-09-08 12:10:54,273 | INFO | django.server | "GET /app1/ HTTP/1.1" 200 5816
+2026-09-08 12:10:59,079 | INFO | app1.views | Login request received
+2026-09-08 12:10:59,085 | INFO | app1.views | Alread existing user username:ishu
+2026-09-08 12:10:59,281 | INFO | django.server | "POST /app1/login/ HTTP/1.1" 200 163
+2026-09-08 12:10:59,290 | INFO | django.server | "GET /app1/botselection/ HTTP/1.1" 200 11178
+2026-09-08 12:11:00,071 | INFO | django.server | "GET /app1/chat/ HTTP/1.1" 200 8668
+2026-09-08 12:11:00,093 | INFO | app1.views | Analytics api called - 200 ok
+2026-09-08 12:11:00,094 | INFO | django.server | "GET /app1/analytics/ HTTP/1.1" 200 98
+2026-09-08 12:11:01,887 | INFO | app1.views | User messaged: hi
+2026-09-08 12:11:01,889 | INFO | app1.views | user message passed to user_llm_interaction
+2026-09-08 12:11:01,890 | INFO | app1.views | redis cache updated for recent messages----sending to LLM_bot function
+2026-09-08 12:11:01,890 | INFO | app1.llm | message sent to LLM_bot func
+2026-09-08 12:11:02,147 | ERROR | app1.llm | Received some error from LLM
+Traceback (most recent call last):
+  File "/Users/inderashsahu/Desktop/api/project/app1/llm.py", line 28, in LLM_bot
+    response = client.chat.completions.create(
+        model="openai/gpt-oss-20b",
+    ...<2 lines>...
+    
+    )
+  File "/Users/inderashsahu/Desktop/api/venv/lib/python3.14/site-packages/openai/_utils/_utils.py", line 298, in wrapper
+    return func(*args, **kwargs)
+  File "/Users/inderashsahu/Desktop/api/venv/lib/python3.14/site-packages/openai/resources/chat/completions/completions.py", line 1251, in create
+    return self._post(
+           ~~~~~~~~~~^
+        "/chat/completions",
+        ^^^^^^^^^^^^^^^^^^^^
+    ...<52 lines>...
+        stream_cls=Stream[ChatCompletionChunk],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/inderashsahu/Desktop/api/venv/lib/python3.14/site-packages/openai/_base_client.py", line 1332, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/inderashsahu/Desktop/api/venv/lib/python3.14/site-packages/openai/_base_client.py", line 1105, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.AuthenticationError: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-09-08 12:11:02,148 | ERROR | app1.views | error occured in user_llm_interaction
+Traceback (most recent call last):
+  File "/Users/inderashsahu/Desktop/api/project/app1/views.py", line 331, in user_llm_interaction
+    bot_data=LLM_bot(messages)
+  File "/Users/inderashsahu/Desktop/api/project/app1/llm.py", line 37, in LLM_bot
+    usage = response.usage
+            ^^^^^^^^
+UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+2026-09-08 12:11:02,149 | INFO | django.server | "POST /app1/query_bot_chat/ HTTP/1.1" 200 139
+2026-09-08 12:11:02,154 | INFO | app1.views | Analytics api called - 200 ok
+2026-09-08 12:11:02,154 | INFO | django.server | "GET /app1/analytics/ HTTP/1.1" 200 98
+2026-09-08 12:12:51,495 | INFO | django.utils.autoreload | /Users/inderashsahu/Desktop/api/project/app1/llm.py changed, reloading.
+2026-09-08 12:12:51,846 | INFO | django.utils.autoreload | Watching for file changes with StatReloader
+2026-09-08 12:13:37,690 | INFO | django.utils.autoreload | Watching for file changes with StatReloader
+2026-09-08 12:13:41,146 | INFO | django.server | "GET /app1/ HTTP/1.1" 200 5816
+2026-09-08 12:13:44,792 | INFO | app1.views | Login request received
+2026-09-08 12:13:44,799 | INFO | app1.views | Alread existing user username:ishu
+2026-09-08 12:13:44,989 | INFO | django.server | "POST /app1/login/ HTTP/1.1" 200 163
+2026-09-08 12:13:44,998 | INFO | django.server | "GET /app1/botselection/ HTTP/1.1" 200 11178
+2026-09-08 12:13:45,813 | INFO | django.server | "GET /app1/chat/ HTTP/1.1" 200 8668
+2026-09-08 12:13:45,827 | INFO | app1.views | Analytics api called - 200 ok
+2026-09-08 12:13:45,828 | INFO | django.server | "GET /app1/analytics/ HTTP/1.1" 200 98
+2026-09-08 12:13:47,984 | INFO | app1.views | User messaged: h
+2026-09-08 12:13:47,985 | INFO | app1.views | user message passed to user_llm_interaction
+2026-09-08 12:13:47,986 | INFO | app1.views | redis cache updated for recent messages----sending to LLM_bot function
+2026-09-08 12:13:47,986 | INFO | app1.llm | message sent to LLM_bot func
+2026-09-08 12:13:48,232 | ERROR | app1.llm | Received some error from LLM
+Traceback (most recent call last):
+  File "/Users/inderashsahu/Desktop/api/project/app1/llm.py", line 28, in LLM_bot
+    response = client.chat.completions.create(
+        model="openai/gpt-oss-20b",
+        messages=messages,
+    
+    )
+  File "/Users/inderashsahu/Desktop/api/venv/lib/python3.14/site-packages/openai/_utils/_utils.py", line 298, in wrapper
+    return func(*args, **kwargs)
+  File "/Users/inderashsahu/Desktop/api/venv/lib/python3.14/site-packages/openai/resources/chat/completions/completions.py", line 1251, in create
+    return self._post(
+           ~~~~~~~~~~^
+        "/chat/completions",
+        ^^^^^^^^^^^^^^^^^^^^
+    ...<52 lines>...
+        stream_cls=Stream[ChatCompletionChunk],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/inderashsahu/Desktop/api/venv/lib/python3.14/site-packages/openai/_base_client.py", line 1332, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/inderashsahu/Desktop/api/venv/lib/python3.14/site-packages/openai/_base_client.py", line 1105, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.AuthenticationError: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-09-08 12:13:48,234 | INFO | app1.llm | exiting LLM_bot func
+2026-09-08 12:13:48,234 | ERROR | app1.views | error occured in user_llm_interaction
+Traceback (most recent call last):
+  File "/Users/inderashsahu/Desktop/api/project/app1/views.py", line 339, in user_llm_interaction
+    user_profile_obj.total_tokens += bot_data.get("total_tokens")
+TypeError: unsupported operand type(s) for +=: 'int' and 'NoneType'
+2026-09-08 12:13:48,234 | INFO | django.server | "POST /app1/query_bot_chat/ HTTP/1.1" 200 116
+2026-09-08 12:13:48,238 | INFO | app1.views | Analytics api called - 200 ok
+2026-09-08 12:13:48,239 | INFO | django.server | "GET /app1/analytics/ HTTP/1.1" 200 98
+2026-09-08 12:16:43,113 | INFO | django.utils.autoreload | /Users/inderashsahu/Desktop/api/project/app1/llm.py changed, reloading.
+2026-09-08 12:16:43,466 | INFO | django.utils.autoreload | Watching for file changes with StatReloader
+2026-09-08 12:16:55,961 | INFO | django.utils.autoreload | Watching for file changes with StatReloader
+2026-09-08 12:16:59,719 | INFO | django.server | "GET /app1/ HTTP/1.1" 200 5816
+2026-09-08 12:17:05,349 | INFO | app1.views | Login request received
+2026-09-08 12:17:05,355 | INFO | app1.views | Alread existing user username:ishu
+2026-09-08 12:17:05,547 | INFO | django.server | "POST /app1/login/ HTTP/1.1" 200 163
+2026-09-08 12:17:05,555 | INFO | django.server | "GET /app1/botselection/ HTTP/1.1" 200 11178
+2026-09-08 12:17:06,434 | INFO | django.server | "GET /app1/chat/ HTTP/1.1" 200 8668
+2026-09-08 12:17:06,451 | INFO | app1.views | Analytics api called - 200 ok
+2026-09-08 12:17:06,452 | INFO | django.server | "GET /app1/analytics/ HTTP/1.1" 200 98
+2026-09-08 12:17:07,887 | INFO | app1.views | User messaged: gi
+2026-09-08 12:17:07,888 | INFO | app1.views | user message passed to user_llm_interaction
+2026-09-08 12:17:07,888 | INFO | app1.views | redis cache updated for recent messages----sending to LLM_bot function
+2026-09-08 12:17:07,889 | INFO | app1.llm | message sent to LLM_bot func
+2026-09-08 12:17:08,180 | ERROR | app1.llm | Received some error from LLM
+Traceback (most recent call last):
+  File "/Users/inderashsahu/Desktop/api/project/app1/llm.py", line 28, in LLM_bot
+    response = client.chat.completions.create(
+        model="openai/gpt-oss-20b",
+        messages=messages,
+    
+    )
+  File "/Users/inderashsahu/Desktop/api/venv/lib/python3.14/site-packages/openai/_utils/_utils.py", line 298, in wrapper
+    return func(*args, **kwargs)
+  File "/Users/inderashsahu/Desktop/api/venv/lib/python3.14/site-packages/openai/resources/chat/completions/completions.py", line 1251, in create
+    return self._post(
+           ~~~~~~~~~~^
+        "/chat/completions",
+        ^^^^^^^^^^^^^^^^^^^^
+    ...<52 lines>...
+        stream_cls=Stream[ChatCompletionChunk],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/inderashsahu/Desktop/api/venv/lib/python3.14/site-packages/openai/_base_client.py", line 1332, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/inderashsahu/Desktop/api/venv/lib/python3.14/site-packages/openai/_base_client.py", line 1105, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.AuthenticationError: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-09-08 12:17:08,181 | ERROR | app1.llm | Error in updating model
+Traceback (most recent call last):
+  File "/Users/inderashsahu/Desktop/api/project/app1/llm.py", line 39, in LLM_bot
+    usage = response.usage
+            ^^^^^^^^
+UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+2026-09-08 12:17:08,181 | INFO | app1.llm | exiting LLM_bot func
+2026-09-08 12:17:08,181 | ERROR | app1.views | error occured in user_llm_interaction
+Traceback (most recent call last):
+  File "/Users/inderashsahu/Desktop/api/project/app1/views.py", line 339, in user_llm_interaction
+    user_profile_obj.total_tokens += bot_data.get("total_tokens")
+TypeError: unsupported operand type(s) for +=: 'int' and 'NoneType'
+2026-09-08 12:17:08,182 | INFO | django.server | "POST /app1/query_bot_chat/ HTTP/1.1" 200 116
+2026-09-08 12:17:08,187 | INFO | app1.views | Analytics api called - 200 ok
+2026-09-08 12:17:08,187 | INFO | django.server | "GET /app1/analytics/ HTTP/1.1" 200 98
+2026-09-08 12:19:53,596 | INFO | django.utils.autoreload | /Users/inderashsahu/Desktop/api/project/app1/llm.py changed, reloading.
+2026-09-08 12:19:53,953 | INFO | django.utils.autoreload | Watching for file changes with StatReloader
+2026-09-08 12:20:00,720 | INFO | django.utils.autoreload | Watching for file changes with StatReloader
+2026-09-08 12:20:03,793 | INFO | django.server | "GET /app1/ HTTP/1.1" 200 5816
+2026-09-08 12:20:07,331 | INFO | app1.views | Login request received
+2026-09-08 12:20:07,338 | INFO | app1.views | Alread existing user username:ishu
+2026-09-08 12:20:07,528 | INFO | django.server | "POST /app1/login/ HTTP/1.1" 200 163
+2026-09-08 12:20:07,537 | INFO | django.server | "GET /app1/botselection/ HTTP/1.1" 200 11178
+2026-09-08 12:20:08,461 | INFO | django.server | "GET /app1/chat/ HTTP/1.1" 200 8668
+2026-09-08 12:20:08,477 | INFO | app1.views | Analytics api called - 200 ok
+2026-09-08 12:20:08,479 | INFO | django.server | "GET /app1/analytics/ HTTP/1.1" 200 98
+2026-09-08 12:20:09,779 | INFO | app1.views | User messaged: h
+2026-09-08 12:20:09,780 | INFO | app1.views | user message passed to user_llm_interaction
+2026-09-08 12:20:09,781 | INFO | app1.views | redis cache updated for recent messages----sending to LLM_bot function
+2026-09-08 12:20:09,781 | INFO | app1.llm | message sent to LLM_bot func
+2026-09-08 12:20:10,020 | ERROR | app1.llm | Received some error from LLM
+Traceback (most recent call last):
+  File "/Users/inderashsahu/Desktop/api/project/app1/llm.py", line 28, in LLM_bot
+    response = client.chat.completions.create(
+        model="openai/gpt-oss-20b",
+        messages=messages
+    )
+  File "/Users/inderashsahu/Desktop/api/venv/lib/python3.14/site-packages/openai/_utils/_utils.py", line 298, in wrapper
+    return func(*args, **kwargs)
+  File "/Users/inderashsahu/Desktop/api/venv/lib/python3.14/site-packages/openai/resources/chat/completions/completions.py", line 1251, in create
+    return self._post(
+           ~~~~~~~~~~^
+        "/chat/completions",
+        ^^^^^^^^^^^^^^^^^^^^
+    ...<52 lines>...
+        stream_cls=Stream[ChatCompletionChunk],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/inderashsahu/Desktop/api/venv/lib/python3.14/site-packages/openai/_base_client.py", line 1332, in post
+    return cast(ResponseT, self.request(cast_to, opts, stream=stream, stream_cls=stream_cls))
+                           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/inderashsahu/Desktop/api/venv/lib/python3.14/site-packages/openai/_base_client.py", line 1105, in request
+    raise self._make_status_error_from_response(err.response) from None
+openai.AuthenticationError: Error code: 401 - {'error': {'message': 'Invalid API Key', 'type': 'invalid_request_error', 'code': 'invalid_api_key'}}
+2026-09-08 12:20:10,022 | ERROR | app1.llm | Error in updating model
+Traceback (most recent call last):
+  File "/Users/inderashsahu/Desktop/api/project/app1/llm.py", line 38, in LLM_bot
+    usage = response.usage
+            ^^^^^^^^
+UnboundLocalError: cannot access local variable 'response' where it is not associated with a value
+2026-09-08 12:20:10,022 | INFO | app1.llm | exiting LLM_bot func
+2026-09-08 12:20:10,022 | ERROR | app1.views | error occured in user_llm_interaction
+Traceback (most recent call last):
+  File "/Users/inderashsahu/Desktop/api/project/app1/views.py", line 339, in user_llm_interaction
+    user_profile_obj.total_tokens += bot_data.get("total_tokens")
+TypeError: unsupported operand type(s) for +=: 'int' and 'NoneType'
+2026-09-08 12:20:10,022 | INFO | django.server | "POST /app1/query_bot_chat/ HTTP/1.1" 200 116
+2026-09-08 12:20:10,027 | INFO | app1.views | Analytics api called - 200 ok
+2026-09-08 12:20:10,027 | INFO | django.server | "GET /app1/analytics/ HTTP/1.1" 200 98

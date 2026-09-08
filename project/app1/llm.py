@@ -27,24 +27,28 @@ def LLM_bot(messages):
     try:
         response = client.chat.completions.create(
             model="openai/gpt-oss-20b",
-            messages=messages,
-            
-            
+            messages=messages              
         )
+        elapsed_time=time.time()-start
+
     except Exception as e:
         logger.exception("Received some error from LLM")
-    elapsed_time=time.time()-start
-    usage = response.usage
-    prompt_tokens = usage.prompt_tokens
-    completion_tokens = usage.completion_tokens
-    total_tokens = usage.total_tokens
-    
-    ret_d["bot_message"]=response.choices[0].message.content
-    ret_d["usage"]=usage
-    ret_d["prompt_tokens"]=prompt_tokens
-    ret_d["completion_tokens"]=completion_tokens
-    ret_d["total_tokens"]=total_tokens
-    ret_d["elapsed_time"]=elapsed_time
+        
+    try:
+        usage = response.usage
+        prompt_tokens = usage.prompt_tokens
+        completion_tokens = usage.completion_tokens
+        total_tokens = usage.total_tokens
+        
+        ret_d["bot_message"]=response.choices[0].message.content
+        ret_d["usage"]=usage
+        ret_d["prompt_tokens"]=prompt_tokens
+        ret_d["completion_tokens"]=completion_tokens
+        ret_d["total_tokens"]=total_tokens
+        ret_d["elapsed_time"]=elapsed_time
+    except Exception as e:
+        logger.exception("Error in updating model")
+
     logger.info("exiting LLM_bot func")
     return ret_d
 
